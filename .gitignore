@@ -1,0 +1,16 @@
+.env
+.env.*
+__pycache__/
+*.pyc
+venv/
+.venv/
+downloades/
+downloads/
+*.wav
+*.mp3
+*.mp4
+*.m4a
+*.webm
+*.pt
+*.log
+.streamlit/secrets.toml
