@@ -1,15 +1,26 @@
-
+import os
+import httpx
 from dotenv import load_dotenv
-from utils.audio_processor import process_input
-from core.transcriber import transcribe_all
 
-load_dotenv()
+load_dotenv(override=True)
 
-source = "https://www.youtube.com/watch?v=tplWXd_T7YQ"
-language = "hinglish"  # change to "hinglish" to test Sarvam
+response = httpx.post(
+    "https://api.mistral.ai/v1/chat/completions",
+    headers={
+        "Authorization": f"Bearer {os.getenv('MISTRAL_API_KEY')}"
+    },
+    json={
+        "model": "ministral-14b-2512",
+        "messages": [
+            {"role": "user", "content": "Hello"}
+        ],
+        "max_tokens": 20
+    },
+    timeout=30
+)
 
-chunks = process_input(source)
-transcript = transcribe_all(chunks, language=language)
+print("Status Code:", response.status_code)
+print("Response:", response.text)
+print("Retry After:", response.headers.get("retry-after"))
 
-print("\n=== TRANSCRIPT ===\n")
-print(transcript)
+

@@ -1,4 +1,5 @@
 from langchain_mistralai import ChatMistralAI
+import time
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from langchain_text_splitters import RecursiveCharacterTextSplitter
@@ -6,7 +7,7 @@ from langchain_core.runnables import RunnablePassthrough, RunnableLambda
 
 import os
 def get_llm():
-    return ChatMistralAI(model="mistral-small-latest", mistral_api_key=os.getenv("MISTRAL_API_KEY"), temperature=0.3)
+    return ChatMistralAI(model="ministral-14b-2512", mistral_api_key=os.getenv("MISTRAL_API_KEY"), temperature=0.3)
 
 
 def split_transcript(transcript: str) -> list:
@@ -22,13 +23,17 @@ def summarize(transcript:str)-> str:
     llm=get_llm()
     map_prompt=ChatPromptTemplate.from_messages(
         [
-        ("System","Summarize this portion of a meeting transcript concisely"),
+        ("system","Summarize this portion of a meeting transcript concisely"),
         ("human","{text}"),
         ]
     )
     map_chain=map_prompt | llm |StrOutputParser()
     chunks=split_transcript(transcript)
-    chunk_summaries=[map_chain.invoke({"text":chunk}) for chunk in chunks]
+    chunk_summaries = []
+
+    for chunk in chunks:
+        chunk_summaries.append(map_chain.invoke({"text": chunk}))
+        time.sleep(3)
     combined="\n\n".join(chunk_summaries)
     combined_prompt = ChatPromptTemplate.from_messages(
     [
